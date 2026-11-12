@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quasar — AI Support Agent for Your Business, 24/7</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Segoe UI',sans-serif; background:#000; color:#fff; overflow-x:hidden; }
+  #bg { position:fixed; inset:0; z-index:0; }
+
+  /* ===== NAVBAR ===== */
+  .nav { position:fixed; top:0; width:100%; display:flex; justify-content:space-between;
+    align-items:center; padding:18px 5%; z-index:10;
+    background:rgba(0,0,0,.35); backdrop-filter:blur(12px);
+    border-bottom:1px solid rgba(255,255,255,.08); }
+  .logo { font-size:22px; font-weight:800; letter-spacing:2px; }
+  .logo span { background:linear-gradient(90deg,#7dd3fc,#c084fc,#f472b6);
+    -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .nav-links { display:flex; align-items:center; gap:24px; }
+  .nav-links a { color:#cbd5e1; text-decoration:none; font-size:15px; transition:.2s; }
+  .nav-links a:hover { color:#fff; text-shadow:0 0 10px #7dd3fc; }
+  .btn { padding:12px 28px; border:none; border-radius:50px; cursor:pointer; font-weight:700;
+    font-size:15px; color:#fff; text-decoration:none; display:inline-block;
+    background:linear-gradient(90deg,#6d28d9,#0891b2);
+    box-shadow:0 0 22px rgba(139,92,246,.45); transition:.25s; }
+  .btn:hover { transform:scale(1.06); box-shadow:0 0 36px rgba(34,211,238,.55); }
+  .btn.ghost { background:transparent; border:1px solid rgba(255,255,255,.18); box-shadow:none; }
+
+  /* ===== HERO ===== */
+  .hero { position:relative; z-index:5; min-height:100vh; display:flex; flex-direction:column;
+    justify-content:center; align-items:center; text-align:center; padding:100px 20px 40px; }
+  .pill { padding:8px 20px; border-radius:50px; font-size:13px; letter-spacing:1px;
+    border:1px solid rgba(255,255,255,.14); background:rgba(255,255,255,.05);
+    backdrop-filter:blur(8px); margin-bottom:30px; }
+  .hero h1 { font-size:clamp(60px,12vw,120px); font-weight:900; letter-spacing:8px; line-height:1;
+    background:linear-gradient(90deg,#7dd3fc,#c084fc,#f472b6,#7dd3fc);
+    background-size:300% 100%; -webkit-background-clip:text; background-clip:text;
+    color:transparent; animation:shine 6s linear infinite; }
+  @keyframes shine { to { background-position:300% 0; } }
+  .tagline { font-size:clamp(18px,3vw,26px); font-weight:600; margin:22px 0 10px; }
+  .sub { max-width:640px; opacity:.65; font-size:16px; line-height:1.7; margin-bottom:36px; }
+  .hero-btns { display:flex; gap:16px; flex-wrap:wrap; justify-content:center; }
+
+  /* ===== CHANNELS MARQUEE ===== */
+  .marquee-wrap { position:relative; z-index:5; overflow:hidden; padding:30px 0;
+    border-top:1px solid rgba(255,255,255,.07); border-bottom:1px solid rgba(255,255,255,.07);
+    background:rgba(0,0,0,.3); }
+  .marquee { display:flex; gap:50px; width:max-content; animation:scroll 28s linear infinite; }
+  .marquee:hover { animation-play-state:paused; }
+  @keyframes scroll { to { transform:translateX(-50%); } }
+  .ch { font-size:17px; font-weight:600; opacity:.75; white-space:nowrap; display:flex;
+    align-items:center; gap:10px; }
+  .ch span { font-size:22px; }
+
+  /* ===== SECTIONS ===== */
+  section { position:relative; z-index:5; padding:90px 6%; max-width:1100px; margin:0 auto; }
+  .label { color:#7dd3fc; font-size:13px; letter-spacing:3px; text-transform:uppercase; font-weight:700; }
+  h2 { font-size:clamp(28px,4.5vw,40px); margin:10px 0 14px; }
+  .sec-sub { opacity:.6; max-width:620px; margin-bottom:50px; line-height:1.7; }
+  .reveal { opacity:0; transform:translateY(34px); transition:.8s cubic-bezier(.2,.7,.3,1); }
+  .reveal.show { opacity:1; transform:translateY(0); }
+
+  /* ===== CONNECT STEPS ===== */
+  .steps { display:grid; grid-template-columns:repeat(3,1fr); gap:22px; }
+  .step { background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.09);
+    border-radius:20px; padding:32px 26px; backdrop-filter:blur(8px); transition:.3s; }
+  .step:hover { transform:translateY(-8px); border-color:rgba(125,211,252,.45); }
+  .step .num { font-size:40px; font-weight:900; margin-bottom:14px;
+    background:linear-gradient(90deg,#7dd3fc,#c084fc);
+    -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .step h3 { font-size:19px; margin-bottom:10px; }
+  .step p { opacity:.6; font-size:14.5px; line-height:1.7; }
+
+  /* ===== BRAIN FORM (mock) ===== */
+  .brain { display:grid; grid-template-columns:1fr 1fr; gap:40px; align-items:center; }
+  .brain-text p { opacity:.65; line-height:1.8; font-size:15.5px; margin-bottom:16px; }
+  .brain-text .hl { color:#c084fc; font-weight:600; }
+  .mock-form { background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.1);
+    border-radius:20px; padding:28px; backdrop-filter:blur(8px); }
+  .mock-form h4 { font-size:14px; letter-spacing:1px; opacity:.7; margin-bottom:18px; }
+  .field { margin-bottom:14px; }
+  .field label { display:block; font-size:12.5px; opacity:.55; margin-bottom:6px; }
+  .field .val { background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12);
+    border-radius:10px; padding:11px 14px; font-size:14px; }
+  .field .val.pink { border-color:rgba(244,114,182,.4); color:#f9a8d4; }
+
+  /* ===== CHAT DEMO ===== */
+  .chat-window { max-width:520px; margin:0 auto; background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.1); border-radius:22px; overflow:hidden;
+    backdrop-filter:blur(8px); }
+  .chat-head { padding:16px 22px; display:flex; align-items:center; gap:12px;
+    background:rgba(255,255,255,.05); border-bottom:1px solid rgba(255,255,255,.08); }
+  .dot { width:10px; height:10px; border-radius:50%; background:#4ade80;
+    box-shadow:0 0 10px #4ade80; }
+  .chat-head b { font-size:15px; }
+  .chat-head small { opacity:.5; display:block; font-size:12px; }
+  .chat-body { padding:22px; display:flex; flex-direction:column; gap:12px; min-height:230px; }
+  .msg { max-width:78%; padding:11px 16px; border-radius:16px; font-size:14.5px;
+    line-height:1.55; opacity:0; transform:translateY(10px); }
+  .msg.in { background:rgba(255,255,255,.09); align-self:flex-start;
+    border-bottom-left-radius:4px; }
+  .msg.out { background:linear-gradient(90deg,#6d28d9,#0891b2); align-self:flex-end;
+    border-bottom-right-radius:4px; }
+  .msg.show { opacity:1; transform:translateY(0); transition:.5s; }
+
+  /* ===== NOTIFY ===== */
+  .notify-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:22px; }
+  .n-card { background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.09);
+    border-radius:20px; padding:30px 24px; }
+  .n-card .ico { font-size:30px; margin-bottom:14px; display:block; }
+  .n-card h3 { font-size:17px; margin-bottom:8px; }
+  .n-card p { opacity:.6; font-size:14px; line-height:1.7; }
+
+  footer { position:relative; z-index:5; border-top:1px solid rgba(255,255,255,.08);
+    padding:30px 5%; display:flex; justify-content:space-between; flex-wrap:wrap;
+    gap:12px; opacity:.6; font-size:14px; }
+  footer a { color:#cbd5e1; text-decoration:none; margin-left:18px; }
+
+  @media (max-width:860px) {
+    .steps, .notify-grid { grid-template-columns:1fr; }
+    .brain { grid-template-columns:1fr; }
+    .nav-links a:not(.btn) { display:none; }
+  }
+</style>
+</head>
+<body>
+<canvas id="bg"></canvas>
+
+<nav class="nav">
+  <div class="logo">⚡ <span>QUASAR</span></div>
+  <div class="nav-links">
+    <a href="#connect">How to Connect</a>
+    <a href="#brain">AI Brain</a>
+    <a href="#">Pricing</a>
+    <a href="#">Login</a>
+    <a href="#" class="btn">Get Started</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="pill">🚀 Now in Public Beta — 7 Days Free</div>
+  <h1>QUASAR</h1>
+  <p class="tagline">Your business, answered at the speed of light.</p>
+  <p class="sub">One AI agent that replies to your customers on <b>every</b> platform —
+     in under 3 seconds, 24/7. Trained on YOUR business. Watched by YOU.
+     You sleep. Quasar sells.</p>
+  <div class="hero-btns">
+    <a href="#" class="btn">🚀 Start Free Trial</a>
+    <a href="#connect" class="btn ghost">How It Works ↓</a>
+  </div>
+</header>
+
+<!-- CHANNELS MARQUEE -->
+<div class="marquee-wrap">
+  <div class="marquee">
+    <div class="ch"><span>💬</span> WhatsApp</div>
+    <div class="ch"><span>📸</span> Instagram</div>
+    <div class="ch"><span>👥</span> Facebook</div>
+    <div class="ch"><span>🐦</span> X / Twitter</div>
+    <div class="ch"><span>✈️</span> Telegram</div>
+    <div class="ch"><span>💼</span> LinkedIn</div>
+    <div class="ch"><span>💻</span> Website Chat</div>
+    <div class="ch"><span>📧</span> Email</div>
+    <div class="ch"><span>📱</span> SMS</div>
+    <!-- duplicate for seamless loop -->
+    <div class="ch"><span>💬</span> WhatsApp</div>
+    <div class="ch"><span>📸</span> Instagram</div>
+    <div class="ch"><span>👥</span> Facebook</div>
+    <div class="ch"><span>🐦</span> X / Twitter</div>
+    <div class="ch"><span>✈️</span> Telegram</div>
+    <div class="ch"><span>💼</span> LinkedIn</div>
+    <div class="ch"><span>💻</span> Website Chat</div>
+    <div class="ch"><span>📧</span> Email</div>
+    <div class="ch"><span>📱</span> SMS</div>
+  </div>
+</div>
+
+<!-- HOW TO CONNECT -->
+<section id="connect">
+  <div class="reveal">
+    <div class="label">How It Works</div>
+    <h2>Connect in minutes. Not weeks.</h2>
+    <p class="sec-sub">No developers needed. If you can send a WhatsApp message, you can set up Quasar.</p>
+  </div>
+  <div class="steps">
+    <div class="step reveal">
+      <div class="num">01</div>
+      <h3>Sign Up & Choose Plan</h3>
+      <p>Create your account, pick a plan, and tell us about your business — what you sell, your prices, timings and policies.</p>
+    </div>
+    <div class="step reveal">
+      <div class="num">02</div>
+      <h3>Connect Your Channels</h3>
+      <p>One-click login for WhatsApp, Instagram, Facebook and Telegram. For your website, just paste one small code snippet.</p>
+    </div>
+    <div class="step reveal">
+      <div class="num">03</div>
+      <h3>Go Live 24/7</h3>
+      <p>Quasar starts replying instantly — trained on YOUR business, not generic answers. You watch everything from your dashboard.</p>
+    </div>
+  </div>
+</section>
+
+<!-- BUSINESS BRAIN -->
+<section id="brain">
+  <div class="brain">
+    <div class="brain-text reveal">
+      <div class="label">The Business Brain</div>
+      <h2>Not a random chatbot.<br>An agent that knows YOUR business.</h2>
+      <p>Most chatbots give generic answers. Quasar is different — during setup, you fill a simple
+         form about your business, and it becomes the agent's <span class="hl">brain</span>.</p>
+      <p>A customer asks <span class="hl">"Do you deliver on Sunday?"</span> —
+         Quasar answers with <span class="hl">your</span> policy, <span class="hl">your</span> prices,
+         <span class="hl">your</span> tone. Not made-up stuff.</p>
+      <p>Update your info anytime — the agent learns instantly.</p>
+    </div>
+    <div class="mock-form reveal">
+      <h4>⚙️ QUASAR SETUP — BUSINESS DETAILS</h4>
+      <div class="field"><label>Business Name</label><div class="val">Sharma Dental Clinic</div></div>
+      <div class="field"><label>Business Type</label><div class="val">Dental Clinic 🦷</div></div>
+      <div class="field"><label>Services & Prices</label><div class="val">Cleaning ₹500 • RCT ₹3,000 • Braces ₹25,000</div></div>
+      <div class="field"><label>Timings</label><div class="val">Mon–Sat, 10 AM – 8 PM</div></div>
+      <div class="field"><label>Tone</label><div class="val pink">Friendly & Professional ✓</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- CHAT DEMO -->
+<section>
+  <div class="reveal" style="text-align:center; margin-bottom:40px;">
+    <div class="label">Live Preview</div>
+    <h2>Watch Quasar in action</h2>
+  </div>
+  <div class="chat-window reveal">
+    <div class="chat-head">
+      <div class="dot"></div>
+      <div><b>Quasar Agent</b><small>Trained for Sharma Dental Clinic • Online</small></div>
+    </div>
+    <div class="chat-body" id="chatBody">
+      <div class="msg in">Hi! Do you do teeth cleaning? How much does it cost?</div>
+      <div class="msg out">Yes we do! 😊 Full cleaning & polishing is ₹500 at Sharma Dental Clinic.
+        We're open Mon–Sat, 10 AM–8 PM. Would you like to book an appointment?</div>
+      <div class="msg in">Yes! Sunday morning possible?</div>
+      <div class="msg out">We're closed on Sundays, but Saturday 10 AM is free! Shall I book you
+        for Saturday at 10? 📅</div>
+    </div>
+  </div>
+</section>
+
+<!-- NOTIFICATIONS -->
+<section>
+  <div class="reveal">
+    <div class="label">Full Control</div>
+    <h2>You see everything. Always.</h2>
+    <p class="sec-sub">Every conversation is visible to you in real time — with instant alerts when it matters.</p>
+  </div>
+  <div class="notify-grid">
+    <div class="n-card reveal"><span class="ico">📊</span><h3>Live Dashboard</h3>
+      <p>All chats with every customer, on every channel — in one clean dashboard. Read anytime.</p></div>
+    <div class="n-card reveal"><span class="ico">🔔</span><h3>Instant Notifications</h3>
+      <p>New lead? Booking done? Angry customer? You get an alert on email & WhatsApp immediately.</p></div>
+    <div class="n-card reveal"><span class="ico">🤝</span><h3>Human Handoff</h3>
+      <p>When a chat needs a human, Quasar transfers it to you with full context. Nothing gets lost.</p></div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section style="text-align:center;">
+  <div class="reveal">
+    <h2>Stop losing customers to slow replies.</h2>
+    <p class="sec-sub" style="margin:14px auto 34px;">Every unanswered message is money walking away. Let Quasar catch it.</p>
+    <a href="#" class="btn">🚀 Get Started — 7 Days Free</a>
+  </div>
+</section>
+
+<footer>
+  <div>⚡ QUASAR © 2026 — At the speed of light.</div>
+  <div><a href="#connect">How It Works</a><a href="#">Privacy</a><a href="#">Terms</a><a href="#">Contact</a></div>
+</footer>
+
+<script type="module">
+import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
+
+const canvas = document.querySelector('#bg');
+const renderer = new THREE.WebGLRenderer({canvas, antialias:true});
+renderer.setSize(innerWidth, innerHeight);
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(60, innerWidth/innerHeight, 0.1, 100);
+camera.position.set(0, 4, 10);
+
+// ===== GALAXY =====
+const P = { count: 60000, radius: 14, branches: 5, spin: 1.3, randomness: 0.35,
+            power: 2.8, inside: '#ffaa33', outside: '#3b6fff' };
+const geo = new THREE.BufferGeometry();
+const pos = new Float32Array(P.count * 3);
+const col = new Float32Array(P.count * 3);
+const cIn = new THREE.Color(P.inside), cOut = new THREE.Color(P.outside);
+for (let i = 0; i < P.count; i++) {
+  const r = Math.random() * P.radius;
+  const branch = (i % P.branches) / P.branches * Math.PI * 2;
+  const spinA = r * P.spin;
+  const rand = () => Math.pow(Math.random(), P.power) * (Math.random() < 0.5 ? 1 : -1);
+  pos[i*3]   = Math.cos(branch + spinA) * r + rand() * P.randomness * r;
+  pos[i*3+1] = rand() * P.randomness * r * 0.5;
+  pos[i*3+2] = Math.sin(branch + spinA) * r + rand() * P.randomness * r;
+  const c = cIn.clone().lerp(cOut, r / P.radius);
+  col[i*3]=c.r; col[i*3+1]=c.g; col[i*3+2]=c.b;
+}
+geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+geo.setAttribute('color', new THREE.BufferAttribute(col, 3));
+const galaxy = new THREE.Points(geo, new THREE.PointsMaterial({
+  size: 0.03, sizeAttenuation: true, depthWrite: false,
+  blending: THREE.AdditiveBlending, vertexColors: true }));
+scene.add(galaxy);
+
+const sGeo = new THREE.BufferGeometry();
+const sPos = new Float32Array(3000 * 3);
+for (let i = 0; i < 3000; i++) {
+  sPos[i*3]   = (Math.random()-0.5)*80;
+  sPos[i*3+1] = (Math.random()-0.5)*80;
+  sPos[i*3+2] = (Math.random()-0.5)*80;
+}
+sGeo.setAttribute('position', new THREE.BufferAttribute(sPos, 3));
+const stars = new THREE.Points(sGeo, new THREE.PointsMaterial({
+  size: 0.08, color:'#ffffff', transparent:true, opacity:0.6 }));
+scene.add(stars);
+
+let mx = 0, my = 0;
+addEventListener('mousemove', e => {
+  mx = (e.clientX / innerWidth - 0.5) * 2;
+  my = (e.clientY / innerHeight - 0.5) * 2;
+});
+
+function animate(t) {
+  requestAnimationFrame(animate);
+  galaxy.rotation.y = t * 0.00008;
+  stars.rotation.y = t * 0.00002;
+  camera.position.x += (mx * 1.5 - camera.position.x) * 0.03;
+  camera.position.y += (4 - my * 1.0 - camera.position.y) * 0.03;
+  camera.lookAt(0, 0, 0);
+  renderer.render(scene, camera);
+}
+animate(0);
+addEventListener('resize', () => {
+  camera.aspect = innerWidth/innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+});
+
+// ===== SCROLL REVEAL =====
+const io = new IntersectionObserver(es => {
+  es.forEach(e => { if(e.isIntersecting){ e.target.classList.add('show'); io.unobserve(e.target); } });
+}, {threshold: 0.12});
+document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+// ===== CHAT DEMO (messages ek-ek karke aate hain, loop) =====
+const msgs = document.querySelectorAll('.msg');
+function playChat(i = 0){
+  if(i >= msgs.length){ setTimeout(() => {
+    msgs.forEach(m => m.classList.remove('show'));
+    playChat(0);
+  }, 3500); return; }
+  msgs[i].classList.add('show');
+  setTimeout(() => playChat(i+1), 1600);
+}
+const chatIO = new IntersectionObserver(es => {
+  es.forEach(e => { if(e.isIntersecting){ playChat(); chatIO.disconnect(); } });
+}, {threshold: 0.4});
+chatIO.observe(document.querySelector('.chat-window'));
+</script>
+</body>
+      </html>
