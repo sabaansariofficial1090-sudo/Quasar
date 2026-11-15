@@ -373,10 +373,10 @@ const chatIO = new IntersectionObserver(es => {
 chatIO.observe(document.querySelector('.chat-window'));
 </script>
  <!-- 💬 QUASAR CHAT WIDGET -->
-<style>
+<<style>
 #qs-btn{position:fixed;bottom:20px;right:20px;width:60px;height:60px;border-radius:50%;
 background:linear-gradient(135deg,#7b2ff7,#f107a3);color:#fff;font-size:26px;border:none;
-cursor:pointer;box-shadow:0 0 20px #7b2ff7;z-index:9999}
+cursor:pointer;box-shadow:0 0 20px #7b2ff7;z-index:9999;display:none}
 #qs-box{position:fixed;bottom:90px;right:20px;width:320px;max-width:90vw;height:420px;
 background:#0d0d1a;border:1px solid #7b2ff7;border-radius:16px;display:none;
 flex-direction:column;overflow:hidden;z-index:9999;box-shadow:0 0 30px rgba(123,47,247,.4)}
@@ -389,11 +389,17 @@ flex-direction:column;overflow:hidden;z-index:9999;box-shadow:0 0 30px rgba(123,
 #qs-foot{display:flex;padding:8px;border-top:1px solid #333}
 #qs-in{flex:1;background:#1a1a2e;border:none;color:#fff;padding:10px;border-radius:8px;outline:none}
 #qs-go{background:#7b2ff7;border:none;color:#fff;padding:0 16px;margin-left:6px;border-radius:8px;cursor:pointer}
+.qs-lang{border-radius:6px;padding:2px 8px;font-size:11px;cursor:pointer}
 </style>
 
 <button id="qs-btn">💬</button>
 <div id="qs-box">
-  <div id="qs-head">✨ Quasar AI</div>
+  <div id="qs-head">✨ Quasar AI
+    <span style="float:right">
+      <button class="qs-lang" data-lang="hinglish" style="background:#fff;color:#7b2ff7;border:none">Hinglish</button>
+      <button class="qs-lang" data-lang="english" style="background:transparent;color:#fff;border:1px solid #fff">English</button>
+    </span>
+  </div>
   <div id="qs-msgs"></div>
   <div id="qs-foot">
     <input id="qs-in" placeholder="Apna sawal likho...">
@@ -402,38 +408,60 @@ flex-direction:column;overflow:hidden;z-index:9999;box-shadow:0 0 30px rgba(123,
 </div>
 
 <script>
+// 🔐 SECRET LOCK — widget sirf special link pe dikhega
+const QS_SECRET = "quasar-2026-secret";   // 👈 WOHI secret jo pehle lagaya tha (badla nahi!)
 const QS_API = "https://quasar-api-ysa5.onrender.com/ask";
-const btn=document.getElementById("qs-btn"),box=document.getElementById("qs-box"),
-msgs=document.getElementById("qs-msgs"),inp=document.getElementById("qs-in"),
-go=document.getElementById("qs-go");
 
-btn.onclick=()=>{
-  box.style.display = box.style.display==="flex" ? "none" : "flex";
-  if(!msgs.innerHTML) qsAdd("bot","Namaste! 🚀 Main Quasar hoon. Kaise madad karun?");
-};
+let QS_LANG = "hinglish";  // 🗣️ Default: Hinglish
 
-function qsAdd(who,text){
-  const d=document.createElement("div"); d.className="qs-"+who;
-  const s=document.createElement("span"); s.textContent=text;
-  d.appendChild(s); msgs.appendChild(d); msgs.scrollTop=msgs.scrollHeight;
-  return s;
-}
+const params = new URLSearchParams(window.location.search);
+if(params.get("admin") !== QS_SECRET){
+  document.getElementById("qs-btn").remove();
+  document.getElementById("qs-box").remove();
+} else {
+  const btn=document.getElementById("qs-btn"),box=document.getElementById("qs-box"),
+  msgs=document.getElementById("qs-msgs"),inp=document.getElementById("qs-in"),
+  go=document.getElementById("qs-go");
+  btn.style.display="block";
 
-async function qsSend(){
-  const q=inp.value.trim(); if(!q) return;
-  qsAdd("user",q); inp.value="";
-  const wait=qsAdd("bot","✨ Soch raha hoon...");
-  try{
-    const r=await fetch(QS_API+"?q="+encodeURIComponent(q));
-    const d=await r.json();
-    wait.textContent = d.answer || "😅 Thodi dikkat aa gayi, phir try karo!";
-  }catch(e){
-    wait.textContent = "😴 Server so raha tha... 30 sec baad phir try karo!";
+  // 🗣️ Language toggle buttons
+  document.querySelectorAll(".qs-lang").forEach(b=>{
+    b.onclick=()=>{
+      QS_LANG=b.dataset.lang;
+      document.querySelectorAll(".qs-lang").forEach(x=>{
+        x.style.background = x===b ? "#fff" : "transparent";
+        x.style.color = x===b ? "#7b2ff7" : "#fff";
+      });
+    };
+  });
+
+  btn.onclick=()=>{
+    box.style.display = box.style.display==="flex" ? "none" : "flex";
+    if(!msgs.innerHTML) qsAdd("bot","Namaste Boss! 🚀 Quasar ready hai. Test karo!");
+  };
+
+  function qsAdd(who,text){
+    const d=document.createElement("div"); d.className="qs-"+who;
+    const s=document.createElement("span"); s.textContent=text;
+    d.appendChild(s); msgs.appendChild(d); msgs.scrollTop=msgs.scrollHeight;
+    return s;
   }
+
+  async function qsSend(){
+    const q=inp.value.trim(); if(!q) return;
+    qsAdd("user",q); inp.value="";
+    const wait=qsAdd("bot","✨ Soch raha hoon...");
+    try{
+      const r=await fetch(QS_API+"?q="+encodeURIComponent(q)+"&lang="+QS_LANG);
+      const d=await r.json();
+      wait.textContent = d.answer || "😅 Thodi dikkat aa gayi, phir try karo!";
+    }catch(e){
+      wait.textContent = "😴 Server so raha tha... 30 sec baad phir try karo!";
+    }
+  }
+  go.onclick=qsSend;
+  inp.addEventListener("keydown",e=>{ if(e.key==="Enter") qsSend(); });
 }
-go.onclick=qsSend;
-inp.addEventListener("keydown",e=>{ if(e.key==="Enter") qsSend(); });
 </script>
 <!-- WIDGET END -->
-</body>
       </html>
