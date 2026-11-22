@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quasar AI — Create your account</title>
+<style>
+  :root{
+    --text:#f4f5fb; --muted:#8b90ad; --stroke:rgba(255,255,255,.08);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:#070711; color:var(--text);
+    min-height:100vh; display:grid; place-items:center;
+    padding:28px 18px; overflow-x:hidden; position:relative;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* ---- ambient depth: glowing orbs ---- */
+  .glow{position:fixed;border-radius:50%;filter:blur(90px);pointer-events:none;z-index:0}
+  .glow.a{width:520px;height:520px;background:#5b4bff;opacity:.55;top:-190px;left:-150px;animation:f1 14s ease-in-out infinite}
+  .glow.b{width:460px;height:460px;background:#a855f7;opacity:.45;bottom:-170px;right:-130px;animation:f2 17s ease-in-out infinite}
+  .glow.c{width:320px;height:320px;background:#0ea5e9;opacity:.28;top:46%;left:56%;animation:f1 21s ease-in-out infinite reverse}
+  @keyframes f1{50%{transform:translate3d(44px,52px,0) scale(1.09)}}
+  @keyframes f2{50%{transform:translate3d(-52px,-42px,0) scale(1.11)}}
+
+  /* ---- subtle grid for texture ---- */
+  .grid{
+    position:fixed;inset:0;z-index:0;pointer-events:none;
+    background-image:
+      linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);
+    background-size:56px 56px;
+    -webkit-mask-image:radial-gradient(circle at 50% 40%,#000 0%,transparent 78%);
+    mask-image:radial-gradient(circle at 50% 40%,#000 0%,transparent 78%);
+  }
+
+  .stage{position:relative;z-index:1;width:100%;max-width:452px;perspective:1400px}
+
+  /* ---- the 3D card ---- */
+  .card{
+    position:relative;
+    background:linear-gradient(160deg,rgba(30,32,52,.93),rgba(12,13,24,.97));
+    border:1px solid var(--stroke); border-radius:26px;
+    padding:38px 34px 32px;
+    transform-style:preserve-3d;
+    transition:transform .25s ease-out;
+    will-change:transform;
+    box-shadow:
+      0 1px 0 rgba(255,255,255,.09) inset,
+      0 -1px 0 rgba(0,0,0,.6) inset,
+      0 40px 80px -20px rgba(0,0,0,.85),
+      0 18px 40px -12px rgba(109,94,252,.30);
+  }
+  .card::before{
+    content:"";position:absolute;left:16px;right:16px;top:0;height:1px;
+    background:linear-gradient(90deg,transparent,rgba(160,150,255,.8),transparent);
+  }
+
+  .head{display:flex;align-items:center;gap:12px;margin-bottom:26px;transform:translateZ(26px)}
+  .mark{
+    width:38px;height:38px;border-radius:11px;position:relative;
+    display:grid;place-items:center;font-weight:800;font-size:18px;color:#fff;
+    background:linear-gradient(145deg,#8b7bff,#5b3df0 55%,#7c2ae8);
+    box-shadow:
+      0 2px 0 rgba(255,255,255,.35) inset,
+      0 -6px 12px rgba(0,0,0,.45) inset,
+      0 10px 22px -6px rgba(109,94,252,.9);
+  }
+  .mark::after{
+    content:"";position:absolute;inset:0;border-radius:11px;
+    background:linear-gradient(180deg,rgba(255,255,255,.4),transparent 55%);
+    mix-blend-mode:overlay;
+  }
+  .brandname{font-size:15px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#d9dbf0}
+
+  h1{font-size:26px;line-height:1.2;letter-spacing:-.6px;font-weight:700;transform:translateZ(20px)}
+  .sub{margin-top:8px;font-size:14px;line-height:1.55;color:var(--muted);transform:translateZ(14px)}
+  .sub b{color:#c7c9e6;font-weight:600}
+
+  form{margin-top:26px;transform:translateZ(16px)}
+  .field{margin-bottom:16px}
+  label{display:block;font-size:12px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:#9ba0bf;margin-bottom:8px}
+
+  .wrap{position:relative}
+  input{
+    width:100%;padding:14px 15px;
+    background:linear-gradient(180deg,#0b0c16,#111324);
+    border:1px solid rgba(255,255,255,.09); border-radius:13px;
+    color:var(--text); font-size:15px; font-family:inherit; outline:none;
+    box-shadow:0 2px 6px rgba(0,0,0,.5) inset,0 1px 0 rgba(255,255,255,.05);
+    transition:border-color .18s,box-shadow .18s,background .18s;
+  }
+  input::placeholder{color:#565b7a}
+  input:focus{
+    border-color:rgba(139,123,255,.85);
+    background:linear-gradient(180deg,#0d0e1b,#151730);
+    box-shadow:
+      0 2px 6px rgba(0,0,0,.5) inset,
+      0 0 0 4px rgba(109,94,252,.16),
+      0 0 24px -4px rgba(109,94,252,.5);
+  }
+  .toggle{
+    position:absolute;right:9px;top:50%;transform:translateY(-50%);
+    background:none;border:0;cursor:pointer;border-radius:8px;padding:6px 8px;
+    color:#8b90ad;font-size:12px;font-weight:700;letter-spacing:.05em;font-family:inherit;
+  }
+  .toggle:hover{color:#d9dbf0;background:rgba(255,255,255,.06)}
+  .hint{font-size:12px;color:#6b7092;margin-top:7px}
+
+  /* ---- pressed-in 3D button ---- */
+  .btn3d{
+    width:100%;margin-top:12px;padding:15px;border:0;border-radius:13px;cursor:pointer;
+    font-size:15px;font-weight:700;font-family:inherit;color:#fff;
+    background:linear-gradient(180deg,#8b7bff,#5b3df0);
+    transform:translateY(0);
+    transition:transform .12s,box-shadow .12s,filter .18s;
+    box-shadow:
+      0 1px 0 rgba(255,255,255,.4) inset,
+      0 -3px 0 rgba(40,20,120,.9) inset,
+      0 10px 24px -6px rgba(91,61,240,.75),
+      0 4px 10px rgba(0,0,0,.5);
+  }
+  .btn3d:hover:not(:disabled){filter:brightness(1.07)}
+  .btn3d:active:not(:disabled){
+    transform:translateY(3px);
+    box-shadow:
+      0 1px 0 rgba(255,255,255,.25) inset,
+      0 -1px 0 rgba(40,20,120,.9) inset,
+      0 4px 12px -4px rgba(91,61,240,.6);
+  }
+  .btn3d:disabled{opacity:.6;cursor:not-allowed;transform:translateY(2px)}
+
+  .err{
+    display:none;margin-top:18px;padding:12px 14px;border-radius:12px;
+    font-size:13px;line-height:1.5;
+    background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.35);color:#fca5a5;
+  }
+  .err.show{display:block}
+
+  .foot{margin-top:22px;text-align:center;font-size:13px;color:var(--muted);transform:translateZ(12px)}
+  .foot a{color:#a99dff;text-decoration:none;font-weight:600}
+  .foot a:hover{text-decoration:underline}
+
+  @media (max-width:480px){
+    .card{padding:30px 22px 26px;border-radius:22px}
+    h1{font-size:22px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .glow{animation:none}
+    .card{transition:none}
+  }
+</style>
+</head>
+<body>
+
+<div class="glow a"></div>
+<div class="glow b"></div>
+<div class="glow c"></div>
+<div class="grid"></div>
+
+<div class="stage">
+  <div class="card" id="card">
+
+    <div class="head">
+      <div class="mark">Q</div>
+      <div class="brandname">Quasar AI</div>
+    </div>
+
+    <h1>Create your AI agent</h1>
+    <p class="sub">Connect <b>WhatsApp</b> and <b>Instagram</b> in minutes. Your customers get instant answers — automatically.</p>
+
+    <form id="form" novalidate>
+      <div class="field">
+        <label for="biz">Business name</label>
+        <input id="biz" type="text" placeholder="Sharma Electronics" maxlength="80" autocomplete="organization">
+      </div>
+
+      <div class="field">
+        <label for="name">Your name</label>
+        <input id="name" type="text" placeholder="Rahul Sharma" maxlength="80" autocomplete="name">
+      </div>
+
+      <div class="field">
+        <label for="email">Email</label>
+        <input id="email" type="email" placeholder="rahul@gmail.com" maxlength="120" autocomplete="email">
+      </div>
+
+      <div class="field">
+        <label for="pass">Password</label>
+        <div class="wrap">
+          <input id="pass" type="password" placeholder="At least 8 characters" maxlength="128" autocomplete="new-password">
+          <button class="toggle" type="button" id="toggle">SHOW</button>
+        </div>
+        <div class="hint">8+ characters. Mix in a number and a symbol.</div>
+      </div>
+
+      <div id="err" class="err"></div>
+
+      <button id="btn" class="btn3d" type="submit">Create account</button>
+    </form>
+
+    <p class="foot">Already have an account? <a href="/login">Log in</a></p>
+
+  </div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var form  = document.getElementById("form");
+  var btn   = document.getElementById("btn");
+  var errEl = document.getElementById("err");
+  var card  = document.getElementById("card");
+  var pass  = document.getElementById("pass");
+  var toggle = document.getElementById("toggle");
+
+  function showErr(msg){ errEl.textContent = msg; errEl.classList.add("show"); }
+  function clearErr(){ errEl.classList.remove("show"); }
+
+  /* show / hide password */
+  toggle.addEventListener("click", function () {
+    var hidden = pass.type === "password";
+    pass.type = hidden ? "text" : "password";
+    toggle.textContent = hidden ? "HIDE" : "SHOW";
+  });
+
+  /* subtle 3D tilt — desktop only */
+  var canTilt = window.matchMedia("(hover:hover) and (pointer:fine)").matches;
+  var noMotion = window.matchMedia("(prefers-reduced-motion:reduce)").matches;
+  if (canTilt && !noMotion) {
+    var stage = document.querySelector(".stage");
+    stage.addEventListener("mousemove", function (e) {
+      var r = stage.getBoundingClientRect();
+      var x = (e.clientX - r.left) / r.width - 0.5;
+      var y = (e.clientY - r.top) / r.height - 0.5;
+      card.style.transform = "rotateY(" + (x * 9) + "deg) rotateX(" + (-y * 9) + "deg)";
+    });
+    stage.addEventListener("mouseleave", function () {
+      card.style.transform = "";
+    });
+  }
+
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    clearErr();
+
+    var biz   = document.getElementById("biz").value.trim();
+    var name  = document.getElementById("name").value.trim();
+    var email = document.getElementById("email").value.trim().toLowerCase();
+    var p     = pass.value;
+
+    if (biz.length < 2)  return showErr("Please enter your business name.");
+    if (name.length < 2) return showErr("Please enter your name.");
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return showErr("That email doesn't look right.");
+    if (p.length < 8)    return showErr("Password must be at least 8 characters.");
+
+    btn.disabled = true;
+    btn.textContent = "Creating account...";
+
+    fetch("https://quasar-api-ysa5.onrender.com/signup", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({
+        email: email,
+        password: p,
+        name: name,
+        business_name: biz
+      })
+    })
+    .then(function (res) {
+      return res.json().catch(function(){ return {}; }).then(function (data) {
+        return { ok: res.ok, status: res.status, data: data };
+      });
+    })
+    .then(function (r) {
+      if (!r.ok) {
+        var msg = r.data.detail || r.data.error || "Something went wrong. Please try again.";
+        if (r.status === 409) msg = "This email is already registered. Try logging in.";
+        throw new Error(msg);
+      }
+      window.location.href = "/dashboard";
+    })
+    .catch(function (err) {
+      showErr(err.message || "Network error. Please try again.");
+      btn.disabled = false;
+      btn.textContent = "Create account";
+    });
+  });
+})();
+</script>
+
+</body>
+            </html>
